@@ -33,14 +33,14 @@ public class QuickExpMod implements ModInitializer {
 			ItemStack offHand = player.getOffHandStack();
 
 			// Проверяем, зажата ли ПКМ и есть ли бутылочка опыта в любой руке
-			if (client.options.keyUse.isPressed() &&
+			if (client.options.useKey.isPressed() &&
 					(mainHand.getItem() == Items.EXPERIENCE_BOTTLE || offHand.getItem() == Items.EXPERIENCE_BOTTLE)) {
 				tickCounter++;
 				Hand hand = mainHand.getItem() == Items.EXPERIENCE_BOTTLE ? Hand.MAIN_HAND : Hand.OFF_HAND;
 
 				if (tickCounter >= THROW_DELAY_TICKS) {
 					// Имитируем нажатие ПКМ
-					client.interactionManager.interactItem(player, client.world, hand);
+					client.interactionManager.interactItem(player, hand);
 					player.swingHand(hand);
 					tickCounter = 0;
 				}
