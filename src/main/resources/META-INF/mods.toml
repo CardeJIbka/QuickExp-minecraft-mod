@@ -1,0 +1,43 @@
+# Тип загрузчика модов
+modLoader="javafml"
+# Диапазон версий Forge (47.x.x для Minecraft 1.20.1)
+loaderVersion="[47,)"
+# Лицензия мода
+license="MIT"
+
+# мод только для клиента
+clientSideOnly=true
+
+# Список модов
+[[mods]]
+# Уникальный ID мода
+modId="quickexp"
+# Версия мода
+version="1.20.1-forge-1.0.0"
+# Отображаемое имя мода
+displayName="QuickExp"
+# URL домашней страницы мода
+displayURL="https://www.curseforge.com/minecraft/mc-mods/quick-exp"
+# Путь к файлу иконки
+logoFile="assets/quickexp/icon.png"
+# Авторы мода
+authors="CardeJIbka"
+# Описание мода
+description='''A mod that allows rapid throwing of experience bottles by holding right-click.'''
+# Тест отображения
+displayTest="IGNORE_ALL_VERSION"
+
+# Зависимости
+[[dependencies.quickexp]]
+modId="forge"
+mandatory=true
+versionRange="[47,)"
+ordering="NONE"
+side="CLIENT"
+
+[[dependencies.quickexp]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.20.1,1.21)"
+ordering="NONE"
+side="CLIENT"
