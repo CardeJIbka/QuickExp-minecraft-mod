@@ -17,13 +17,13 @@
 	"environment": "client",
 	"entrypoints": {
 		"main": [
-			"com.quickexp.QuickExpMod"
+			"cardejibka.quickexp.QuickExpMod"
 		]
 	},
 	"mixins": [],
 	"depends": {
 		"fabricloader": ">=0.17.2",
-		"minecraft": "~1.21.4",
+		"minecraft": ">=1.21.4 <=1.21.10",
 		"java": ">=21",
 		"fabric-api": "*"
 	},
