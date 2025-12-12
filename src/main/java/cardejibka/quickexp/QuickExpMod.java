@@ -27,7 +27,7 @@ public class QuickExpMod implements ModInitializer {
 				return;
 			}
 
-            ClientPlayerEntity player = client.player;
+			ClientPlayerEntity player = client.player;
 
 			ItemStack mainHand = player.getMainHandStack();
 			ItemStack offHand = player.getOffHandStack();
@@ -42,7 +42,7 @@ public class QuickExpMod implements ModInitializer {
 				player.swingHand(hand);
 				tickCounter = THROW_DELAY_TICKS;
 
-                LOGGER.debug("Thrown XP bottle from {} (cooldown started)", hand);
+				LOGGER.debug("Thrown XP bottle from {} (cooldown started)", hand);
 			}
 
 			if (tickCounter > 0) {
