@@ -1,0 +1,28 @@
+modLoader="javafml"
+loaderVersion="[36,)"
+license="MIT"
+issueTrackerURL="https://github.com/CardeJIbka/QuickExp-minecraft-mod/issues"
+
+[[mods]]
+modId="quickexp"
+version="${version}"
+displayName="QuickExp"
+displayURL="https://www.curseforge.com/minecraft/mc-mods/quick-exp"
+authors="CardeJIbka"
+description='''
+A mod that allows rapid throwing of experience bottles by holding right-click.
+'''
+
+[[dependencies.quickexp]]
+    modId="forge"
+    mandatory=true
+    versionRange="[36,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.quickexp]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.16.5]"
+    ordering="NONE"
+    side="BOTH"

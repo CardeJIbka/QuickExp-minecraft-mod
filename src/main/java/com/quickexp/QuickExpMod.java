@@ -1,15 +1,19 @@
 package com.quickexp;
 
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Hand;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class QuickExpMod implements ModInitializer {
+@Mod("quickexp")
+public class QuickExpMod {
 	public static final String MOD_ID = "quickexp";
 	private static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
@@ -17,36 +21,44 @@ public class QuickExpMod implements ModInitializer {
 	private int tickCounter = 0;
 	private boolean isEnabled = true;
 
-	@Override
-	public void onInitialize() {
+	public QuickExpMod() {
 		LOGGER.info("Initializing QuickExp Mod");
+		// Регистрация обработчика событий
+		MinecraftForge.EVENT_BUS.register(this);
+	}
 
-		// Регистрация обработчика тиков на клиентской стороне
-		ClientTickEvents.END_CLIENT_TICK.register(client -> {
-			if (!isEnabled || client.player == null || client.world == null || client.interactionManager == null) {
+	@SubscribeEvent
+	public void onClientTick(TickEvent.ClientTickEvent event) {
+		// Выполняем логику только в фазе END
+		if (event.phase != TickEvent.Phase.END) {
+			return;
+		}
+
+		Minecraft client = Minecraft.getInstance();
+		
+		if (!isEnabled || client.player == null || client.world == null || client.playerController == null) {
+			tickCounter = 0;
+			return;
+		}
+
+		ClientPlayerEntity player = client.player;
+		ItemStack mainHand = player.getHeldItemMainhand();
+		ItemStack offHand = player.getHeldItemOffhand();
+
+		// Проверяем, зажата ли ПКМ и есть ли бутылочка опыта в любой руке
+		if (client.gameSettings.keyBindUseItem.isKeyDown() &&
+				(mainHand.getItem() == Items.EXPERIENCE_BOTTLE || offHand.getItem() == Items.EXPERIENCE_BOTTLE)) {
+			tickCounter++;
+			Hand hand = mainHand.getItem() == Items.EXPERIENCE_BOTTLE ? Hand.MAIN_HAND : Hand.OFF_HAND;
+
+			if (tickCounter >= THROW_DELAY_TICKS) {
+				// Имитируем нажатие ПКМ
+				client.playerController.processRightClick(player, client.world, hand);
+				player.swingArm(hand);
 				tickCounter = 0;
-				return;
 			}
-
-			ClientPlayerEntity player = client.player;
-			ItemStack mainHand = player.getMainHandStack();
-			ItemStack offHand = player.getOffHandStack();
-
-			// Проверяем, зажата ли ПКМ и есть ли бутылочка опыта в любой руке
-			if (client.options.keyUse.isPressed() &&
-					(mainHand.getItem() == Items.EXPERIENCE_BOTTLE || offHand.getItem() == Items.EXPERIENCE_BOTTLE)) {
-				tickCounter++;
-				Hand hand = mainHand.getItem() == Items.EXPERIENCE_BOTTLE ? Hand.MAIN_HAND : Hand.OFF_HAND;
-
-				if (tickCounter >= THROW_DELAY_TICKS) {
-					// Имитируем нажатие ПКМ
-					client.interactionManager.interactItem(player, client.world, hand);
-					player.swingHand(hand);
-					tickCounter = 0;
-				}
-			} else {
-				tickCounter = 0;
-			}
-		});
+		} else {
+			tickCounter = 0;
+		}
 	}
 }
