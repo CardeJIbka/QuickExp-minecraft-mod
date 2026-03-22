@@ -1,7 +1,11 @@
 package cardejibka.quickexp;
 
+import cardejibka.quickexp.packets.OptOutPacket;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -10,48 +14,54 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class QuickExpMod implements ModInitializer {
-	public static final String MOD_ID = "quickexp";
-	private static final Logger LOGGER = LogManager.getLogger(MOD_ID);
+    public static final String MOD_ID = "quickexp";
+    private static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
-	private static final int THROW_DELAY_TICKS = 1;
-	private int tickCounter = 0;
-	private final boolean isEnabled = true;
+    private static final int THROW_DELAY_TICKS = 1;
+    private int tickCounter = 0;
+    private final boolean isEnabled = true;
 
-	@Override
-	public void onInitialize() {
-		LOGGER.info("Initializing QuickExp Mod");
+    @Override
+    public void onInitialize() {
+        LOGGER.info("Initializing QuickExp Mod");
 
-		ClientTickEvents.END_CLIENT_TICK.register(client -> {
-			if (!isEnabled || client.player == null || client.world == null || client.interactionManager == null) {
-				resetTickCounter();
-				return;
-			}
+        PayloadTypeRegistry.playC2S().register(OptOutPacket.ID, OptOutPacket.CODEC);
 
-			ClientPlayerEntity player = client.player;
+        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+            ClientPlayNetworking.send(new OptOutPacket());
+        });
 
-			ItemStack mainHand = player.getMainHandStack();
-			ItemStack offHand = player.getOffHandStack();
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            if (!isEnabled || client.player == null || client.world == null || client.interactionManager == null) {
+                resetTickCounter();
+                return;
+            }
 
-			boolean hasBottle = (!mainHand.isEmpty() && mainHand.getItem() == Items.EXPERIENCE_BOTTLE) ||
-					(!offHand.isEmpty() && offHand.getItem() == Items.EXPERIENCE_BOTTLE);
+            ClientPlayerEntity player = client.player;
 
-			if (client.options.useKey.isPressed() && hasBottle && tickCounter <= 0) {
-				Hand hand = !mainHand.isEmpty() && mainHand.getItem() == Items.EXPERIENCE_BOTTLE ? Hand.MAIN_HAND : Hand.OFF_HAND;
+            ItemStack mainHand = player.getMainHandStack();
+            ItemStack offHand = player.getOffHandStack();
 
-				client.interactionManager.interactItem(player, hand);
-				player.swingHand(hand);
-				tickCounter = THROW_DELAY_TICKS;
+            boolean hasBottle = (!mainHand.isEmpty() && mainHand.getItem() == Items.EXPERIENCE_BOTTLE) ||
+                    (!offHand.isEmpty() && offHand.getItem() == Items.EXPERIENCE_BOTTLE);
 
-				LOGGER.debug("Thrown XP bottle from {} (cooldown started)", hand);
-			}
+            if (client.options.useKey.isPressed() && hasBottle && tickCounter <= 0) {
+                Hand hand = !mainHand.isEmpty() && mainHand.getItem() == Items.EXPERIENCE_BOTTLE ? Hand.MAIN_HAND : Hand.OFF_HAND;
 
-			if (tickCounter > 0) {
-				tickCounter--;
-			}
-		});
-	}
+                client.interactionManager.interactItem(player, hand);
+                player.swingHand(hand);
+                tickCounter = THROW_DELAY_TICKS;
 
-	private void resetTickCounter() {
-		tickCounter = 0;
-	}
+                LOGGER.debug("Thrown XP bottle from {} (cooldown started)", hand);
+            }
+
+            if (tickCounter > 0) {
+                tickCounter--;
+            }
+        });
+    }
+
+    private void resetTickCounter() {
+        tickCounter = 0;
+    }
 }
