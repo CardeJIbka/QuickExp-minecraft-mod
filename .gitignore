@@ -1,6 +1,6 @@
 # gradle
 
-.gradle/
+../../Downloads/quickexp-template-26.1/.gradle/
 build/
 out/
 classes/
