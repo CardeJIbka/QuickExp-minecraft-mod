@@ -19,7 +19,6 @@ public class QuickExpClient {
     public QuickExpClient() {
         LOGGER.info("QuickExpClient initialized – client only");
 
-        // Регистрируем слушатель событий ТОЛЬКО на клиенте
         NeoForge.EVENT_BUS.addListener(this::onClientTick);
     }
 

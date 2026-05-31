@@ -12,6 +12,5 @@ public class QuickExp {
 
     public QuickExp() {
         LOGGER.info("QuickExp loaded – NeoForge 1.21");
-        // Здесь можно регистрировать общие вещи, если появятся
     }
 }
