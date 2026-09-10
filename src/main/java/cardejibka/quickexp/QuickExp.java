@@ -11,6 +11,6 @@ public class QuickExp {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     public QuickExp() {
-        LOGGER.info("QuickExp loaded – NeoForge 1.21");
+        LOGGER.info("QuickExp loaded – NeoForge");
     }
 }
